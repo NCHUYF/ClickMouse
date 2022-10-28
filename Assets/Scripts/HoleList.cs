@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YFrameWork;
 
 // 所有洞穴
-public class HoleList : MonoBehaviour
+public class HoleList : ClickMouseController
 {
     // Start is called before the first frame update
     void Start()
@@ -14,9 +15,19 @@ public class HoleList : MonoBehaviour
         {
             _holeList.Add(h);
         }
+        this.RegisterEvent<GameOverEvent>(OnGameOver).UnRegisterOnDestroy(gameObject);
+        Invoke("StartGame", 3);
+    }
 
+    void StartGame()
+    {
+        this.SendCommand<StartGameCmd>();
         StartCoroutine("AppearMole");
+    }
 
+    void OnGameOver(GameOverEvent e)
+    {
+        StopCoroutine("AppearMole");
     }
 
     IEnumerator AppearMole()

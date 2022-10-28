@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using YFrameWork;
 
-public class Hole : MonoBehaviour
+public class Hole : ClickMouseController
 {
     private void Start()
     {
@@ -23,6 +24,7 @@ public class Hole : MonoBehaviour
 
     public void Hide()
     {
+        _bDie = true;
         _mole.SetActive(false);
     }
 
@@ -41,11 +43,13 @@ public class Hole : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (_bDie) return;
         _mole.GetComponent<TextMeshPro>().text = "Die";
         _bDie = true;
+        this.SendCommand<AddScoreCmd>();
         Invoke("Hide", 0.5f);
     }
 
     GameObject _mole;
-    bool _bDie = false;
+    bool _bDie = true;
 }
