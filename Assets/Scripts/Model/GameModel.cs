@@ -16,4 +16,6 @@ public class GameModel : BaseModel, IModel
     }
 
     public BindableProperty<int> Score = new BindableProperty<int>();
+    public BindableProperty<int> StayTime = new BindableProperty<int>(3);
+    public BindableProperty<int> DelayTime = new BindableProperty<int>(1);
 }

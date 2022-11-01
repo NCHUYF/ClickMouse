@@ -15,3 +15,7 @@ public class StartGameCmd : BaseCommand
 
     }
 }
+
+class GameStartEvent
+{
+}

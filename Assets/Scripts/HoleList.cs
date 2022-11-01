@@ -15,13 +15,12 @@ public class HoleList : ClickMouseController
         {
             _holeList.Add(h);
         }
+        this.RegisterEvent<GameStartEvent>(OnStartGame).UnRegisterOnDestroy(gameObject);
         this.RegisterEvent<GameOverEvent>(OnGameOver).UnRegisterOnDestroy(gameObject);
-        Invoke("StartGame", 3);
     }
 
-    void StartGame()
+    void OnStartGame(GameStartEvent e)
     {
-        this.SendCommand<StartGameCmd>();
         StartCoroutine("AppearMole");
     }
 
@@ -40,7 +39,9 @@ public class HoleList : ClickMouseController
             {
                 hole.Show();
             }
-            yield return new WaitForSeconds(1);
+
+            int delayTime = this.GetModel<GameModel>().DelayTime.Value;
+            yield return new WaitForSeconds(delayTime);
         }
         yield return 0;
     }
@@ -48,7 +49,7 @@ public class HoleList : ClickMouseController
     // 拿随机洞穴
     public Hole GetRandomHole()
     {
-        var match = _holeList.FindAll(h=> { return !h.transform.GetChild(0).gameObject.activeSelf; });
+        var match = _holeList.FindAll(h=> { return h.GetState() == Hole.HoleState.eNull; });
         int choose = UnityEngine.Random.Range(0, match.Count);
         if (match.Count > 0)
             return match[choose];

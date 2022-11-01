@@ -82,7 +82,7 @@ namespace YFrameWork
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="command"></param>
-        void SendCommand<T>(T command) where T : class, ICommand, new();
+        void SendCommand<T>(T command) where T : class, ICommand;
 
         /// <summary>
         /// 发送查询
@@ -212,7 +212,7 @@ namespace YFrameWork
             command.Execute();
         }
 
-        public void SendCommand<TCommand>(TCommand command) where TCommand : class, ICommand, new()
+        public void SendCommand<TCommand>(TCommand command) where TCommand : class, ICommand
         {
             command.SetApp(this);
             command.Init();
@@ -540,7 +540,7 @@ namespace YFrameWork
             self.GetApp().SendCommand<T>();
         }
 
-        public static void SendCommand<T>(this ISendCommand self, T cmd) where T : class, ICommand, new()
+        public static void SendCommand<T>(this ISendCommand self, T cmd) where T : class, ICommand
         {
             self.GetApp().SendCommand<T>(cmd);
         }

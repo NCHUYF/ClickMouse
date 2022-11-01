@@ -15,3 +15,7 @@ public class GameOverCmd : BaseCommand
 
     }
 }
+
+class GameOverEvent
+{
+}

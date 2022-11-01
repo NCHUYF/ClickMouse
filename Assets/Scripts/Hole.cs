@@ -6,50 +6,69 @@ using YFrameWork;
 
 public class Hole : ClickMouseController
 {
-    private void Start()
+    public enum HoleState
     {
-        _mole = transform.GetChild(0).gameObject;
+        eNull,
+        eAlive,
+        eDie,
     }
 
-    // Start is called before the first frame update
+    private void Start()
+    {
+        _moleAnimator = transform.GetChild(0).gameObject.GetComponent<Animator>();
+        this.RegisterEvent<HitEvent>(OnHit).UnRegisterOnDestroy(gameObject);
+    }
 
+    void OnHit(HitEvent e)
+    {
+        if (e.hole != this)
+            return;
+
+        if (_state == HoleState.eAlive)
+        {
+            _moleAnimator.SetTrigger("Die");
+            _state = HoleState.eDie;
+            this.SendCommand<AddScoreCmd>();
+            Invoke("Hide", 0.5f);
+            this.SendCommand<ShakeCmd>();
+            AudioManager.Instance.PlayHitAudio();
+        }
+        else
+        {
+            AudioManager.Instance.PlayErrorAudio();
+        }
+    }
 
     public void Show()
     {
-        _bDie = false;
-        _mole.SetActive(true);
-        _mole.GetComponent<TextMeshPro>().text = "Mouse";
+        _state = HoleState.eAlive;
+        _moleAnimator.SetTrigger("Show");
         WaitForHide();
     }
 
     public void Hide()
     {
-        _bDie = true;
-        _mole.SetActive(false);
+        _state = HoleState.eNull;
+        _moleAnimator.SetTrigger("Hide");
     }
 
     void WaitForHide()
     {
-        Invoke("AutoHide", 5);
+        // 地鼠停留的时间
+        int stayTime = this.GetModel<GameModel>().StayTime.Value;
+        Invoke("AutoHide", stayTime);
     }
 
     void AutoHide()
     {
-        if (!_bDie) Hide();
+        if (_state == HoleState.eAlive) Hide();
     }
 
-    // Update is called once per frame
-
-
-    private void OnMouseDown()
+    public HoleState GetState()
     {
-        if (_bDie) return;
-        _mole.GetComponent<TextMeshPro>().text = "Die";
-        _bDie = true;
-        this.SendCommand<AddScoreCmd>();
-        Invoke("Hide", 0.5f);
+        return _state;
     }
 
-    GameObject _mole;
-    bool _bDie = true;
+    Animator _moleAnimator;
+    HoleState _state = HoleState.eNull;
 }
